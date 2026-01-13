@@ -7,7 +7,7 @@
 ### 📋 Project Overview
 This project focuses on building a complete **Data Engineering and Analytics pipeline** to process and analyze earthquake event data using **Microsoft Fabric**.
 
-The pipeline ingests real-time data from the **USGS API**, processes it through a Medallion Architecture (Bronze, Silver, Gold) using PySpark, and produces business-ready datasets for visualization in **Power BI**.
+The pipeline begins with raw data ingestion from the [USGS API](https://earthquake.usgs.gov/), processes it through a Medallion Architecture (Bronze, Silver, Gold) using PySpark, and produces business-ready datasets for visualization in **Power BI**.
 
 **Key Technologies:**
 * **Computation:** Fabric Data Engineering (Spark/Python).
@@ -28,67 +28,65 @@ graph LR
 
 ```
 
----
+## Steps 
 
-### 🛠️ Technical Implementation Steps
+| File | Description |
+| :--- | :--- |
+| `01_ingestion_bronze.ipynb` | Connects to USGS API and saves raw JSON to OneLake. |
+| `02_transform_silver.ipynb` | Cleans data, handles timestamps, and converts to Delta Parquet. |
+| `03_aggregation_gold.ipynb` | Aggregates metrics (Magnitude by Region) for reporting. |
 
-#### 1. Bronze Layer (Ingestion)
 
-* **Script:** `01_ingestion_bronze.ipynb`
-* **Function:** Ingests raw earthquake data directly from the USGS API.
-* **Strategy:** Minimal processing to store data in its original format (JSON) within the **OneLake**, serving as the immutable foundation.
+### USGS API - Bronze Layer Processing
+1. Ingests raw earthquake data from the USGS API.
+2. Minimal processing to store data in its original format.
+3. Serves as the foundation layer for further refinement.
 
-#### 2. Silver Layer (Transformation)
+### USGS API - Silver Layer Processing
 
-* **Script:** `02_transform_silver.ipynb`
-* **Function:** Enhances data from the Bronze layer.
-* **Actions:** Cleans null values, handles timestamps, and consolidates schemas. Prepares data for analytical processing.
+1. Enhances data from the bronze layer by cleaning, transforming and consolidating it.
+2. Prepares data for analytical processing and deeper insights.
 
-#### 3. Gold Layer (Business Logic)
+### USGS - Gold Layer Processing
+1. Refines data from the Silver layer to create bussiness-ready datasets. A new environment was created to include the `reverse_geocoder` library, which is required for executing the Gold Layer processing. This ensures compatibility and smooth execution of the geographical data enhancement workflows.
+2. Optimized for reporting and visualization, specifically designed for Power BI.
 
-* **Script:** `03_aggregation_gold.ipynb`
-* **Function:** Refines data to create business-ready datasets.
-* **💡 Technical Note:** A custom environment was created to include the **`reverse_geocoder`** library. This is required to enrich the dataset with precise location details (City/Country) based on coordinates.
+![GoldDB](img/Database%20-%20Gold%20Layer.png)
 
----
+## Data Attibute Definitions
+| **Attribute**        | **Description**                                                                 |
+|-----------------------|---------------------------------------------------------------------------------|
+| `id`                 | Unique identifier for each data record (string).                                |
+| `latitude`           | Latitude of the event's location (double).                                      |
+| `longitude`          | Longitude of the event's location (double).                                     |
+| `elevation`          | Elevation at which the event occurred, in meters (double).                      |
+| `title`              | Title or name of the earthquake event (string).                                 |
+| `place_description`  | Description of the event’s location (string).                                   |
+| `sig`                | Significance score of the event, indicating its importance (bigint).            |
+| `mag`                | Magnitude of the earthquake (double).                                           |
+| `magType`            | Type of magnitude scale used to measure the event (string).                     |
+| `time`               | Timestamp indicating when the event occurred.                                   |
+| `updated`            | Timestamp marking the most recent update to the event data.                     |
 
-### ⚙️ Pipeline Orchestration (Dynamic Variables)
 
-To ensure the pipeline is fully automated, dynamic variables are configured in **Data Factory** to fetch data incrementally based on execution time:
+## Building the pipeline
 
-| Variable | Expression Logic | Description |
-| --- | --- | --- |
-| **`start_date`** | `@formatDateTime(adddays(utcNow(),-1), 'yyyy-MM-dd')` | Captures the date **one day before** execution. |
-| **`end_date`** | `@formatDateTime(utcNow(), 'yyyy-MM-dd')` | Captures the **current date** at runtime. |
+### Setting Variables for Dynamic Data Extraction
 
----
+To ensure that the pipeline always processes the most recent data, dynamic variables are configured for the start and end dates. These variables automatically ajust based on the current date at runtime:
 
-### 📚 Data Dictionary
-
-The following attributes are tracked for each seismic event:
-
-| Attribute | Type | Description |
-| --- | --- | --- |
-| `id` | String | Unique identifier for each data record. |
-| `latitude` | Double | Latitude of the event's location. |
-| `longitude` | Double | Longitude of the event's location. |
-| `elevation` | Double | Elevation/Depth at which the event occurred (meters). |
-| `title` | String | Title or name of the earthquake event. |
-| `place_description` | String | Text description of the location. |
-| `sig` | BigInt | Significance score (importance) of the event. |
-| `mag` | Double | Magnitude of the earthquake. |
-| `magType` | String | Scale used to measure the event (e.g., Richter). |
-| `time` | Timestamp | Exact time when the event occurred. |
-
----
-
-### 📊 Dashboard Preview
-
-*(Visualization of global seismic activity)*
-
-*(Note: Ensure your image file is named correctly inside the img folder)*
-
+`start_date`: Captures the date one day before the pipeline execution.
+``` 
+@formatDateTime(adddays(utcNow(),-1), 'yyyy-MM-dd')
 ```
-
-
+`end_date`: Captures the current date at the time of pipeline execution.
 ```
+@formatDateTime(utcNow(), 'yyyy-MM-dd')
+```
+ 
+ ![Pipeline](img/Pipeline.png)
+
+## Dashboard - Power BI
+
+
+![Dashboard](img/Dashboard.png)
