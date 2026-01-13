@@ -1,16 +1,3 @@
-¡Excelente idea! Mezclar la estructura visual "Senior" que te di con los **detalles técnicos específicos** del README original (como el diccionario de datos y la lógica de fechas) es la combinación ganadora.
-
-Aquí tienes la **versión definitiva Fusionada**.
-
-**He integrado:**
-
-1. **La Estética:** Badges, Diagrama de Arquitectura y Tablas limpias.
-2. **El Contenido Original:** La explicación de las capas (Bronze/Silver/Gold), el uso de la librería `reverse_geocoder` (esto es un detalle técnico muy bueno para mencionar) y la lógica de fechas dinámicas.
-3. **El Diccionario de Datos:** Lo convertí en una tabla legible.
-
-Copia y pega este código completo en tu `README.md`.
-
-```markdown
 # 🌍 Real-Time Seismic Analytics with Microsoft Fabric
 
 ![Fabric](https://img.shields.io/badge/Microsoft%20Fabric-Enabled-0078D4?style=for-the-badge&logo=microsoft)
