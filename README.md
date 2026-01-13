@@ -8,6 +8,15 @@ This project implements an End-to-End Data Engineering pipeline that ingests rea
 
 ---
 
+### 📒 Repository Structure
+| File | Description |
+| :--- | :--- |
+| `01_ingestion_bronze.ipynb` | Connects to USGS API and saves raw JSON to OneLake. |
+| `02_transform_silver.ipynb` | Cleans data, handles timestamps, and converts to Delta Parquet. |
+| `03_aggregation_gold.ipynb` | Aggregates metrics (Magnitude by Region) for reporting. |
+
+---
+
 ### 🏗️ Architecture Flow
 The pipeline follows industry best practices for data processing:
 
@@ -17,4 +26,5 @@ graph LR
     B -->|Transformation| C(Silver Layer - Cleaned Delta)
     C -->|Aggregation| D(Gold Layer - Star Schema)
     D -->|DirectLake| E[Power BI Report]
+
 
