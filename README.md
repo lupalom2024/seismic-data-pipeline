@@ -17,7 +17,7 @@ graph LR
     B -->|Transformation| C(Silver Layer - Cleaned Delta)
     C -->|Aggregation| D(Gold Layer - Star Schema)
     D -->|DirectLake| E[Power BI Report]
-
+ 
 
 | File | Description |
 | :--- | :--- |
